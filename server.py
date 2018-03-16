@@ -4,13 +4,13 @@ import zmq
 context = zmq.Context()
 
 # Define the socket using the "Context"
-sock = context.socket(zmq.REP)
-sock.bind("tcp://127.0.0.1:5678")
+receiver = context.socket(zmq.PULL)
+receiver.bind("tcp://127.0.0.1:5679")
+broadcaster = context.socket(zmq.PUB)
+broadcaster.bind("tcp://127.0.0.1:5680")
 
-# Run a simple "Echo" server
+# Run server
 while True:
-    message = sock.recv()
-    message = message.decode()
-    message = message[::-1]
-    sock.send_string("Echo: " + message)
-    print("[Server] Echo: " + message)
+    message = receiver.recv()
+    broadcaster.send(message)
+    print("[Server] Echo: " + message.decode())
